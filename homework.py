@@ -6,7 +6,7 @@ class Record:
         self.amount = amount
         self.comment = comment
         if date is None:
-            self.date = dt.datetime.now().date()
+            self.date = dt.date.today()
         else:
             self.date = dt.datetime.strptime(date, '%d.%m.%Y').date()
 
@@ -22,13 +22,13 @@ class Calculator:
     def get_today_stats(self):
         today_stats = 0
         for record in self.records:
-            if record.date == dt.datetime.now().date():
+            if record.date == dt.date.today():
                 today_stats += record.amount
         return today_stats
 
     def get_week_stats(self):
         week_stats = 0
-        today = dt.datetime.now().date()
+        today = dt.date.today()
         day_week_ago = today - dt.timedelta(weeks=1)
         for record in self.records:
             if day_week_ago <= record.date <= today:
