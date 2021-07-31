@@ -20,11 +20,12 @@ class Calculator:
         self.records.append(record)
 
     def get_today_stats(self):
-        today_stats = 0
+        today_stats = list()
+        today = dt.date.today()
         for record in self.records:
-            if record.date == dt.date.today():
-                today_stats += record.amount
-        return today_stats
+            if record.date == today:
+                today_stats.append(record.amount)
+        return sum(today_stats)
 
     def get_week_stats(self):
         week_stats = 0
@@ -42,28 +43,23 @@ class Calculator:
 class CashCalculator(Calculator):
     USD_RATE = 75.0
     EURO_RATE = 85.0
-
-    @staticmethod
-    def __check_balance(balance):
-        balance = round(balance, 2)
-        if balance > 0:
-            return f'На сегодня осталось {balance}'
-        elif balance == 0:
-            return 'Денег нет, держись'
-        else:
-            return f'Денег нет, держись: твой долг - {abs(balance)}'
+    RUB_RATE = 1.0
 
     def get_today_cash_remained(self, currency):
         balance = self.get_today_balance()
-        if self.__check_balance(balance) == 'Денег нет, держись':
+        currencies = {
+            'rub': ('руб', CashCalculator.RUB_RATE),
+            'usd': ('USD', CashCalculator.USD_RATE),
+            'eur': ('Euro', CashCalculator.EURO_RATE)
+        }
+        name, rate = currencies[currency]
+        balance = round(balance / rate, 2)
+        if balance > 0:
+            return f'На сегодня осталось {balance} {name}'
+        elif balance == 0:
             return 'Денег нет, держись'
-        elif currency == 'rub':
-            return self.__check_balance(balance) + ' руб'
-        elif currency == 'usd':
-            return self.__check_balance(balance / self.USD_RATE) + ' USD'
-        elif currency == 'eur':
-            return self.__check_balance(balance / self.EURO_RATE) + ' Euro'
-        return 'Invalid currency specified'
+        else:
+            return f'Денег нет, держись: твой долг - {abs(balance)} {name}'
 
 
 class CaloriesCalculator(Calculator):
