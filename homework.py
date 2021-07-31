@@ -28,13 +28,13 @@ class Calculator:
         return sum(today_stats)
 
     def get_week_stats(self):
-        week_stats = 0
+        week_stats = list()
         today = dt.date.today()
         day_week_ago = today - dt.timedelta(weeks=1)
         for record in self.records:
             if day_week_ago <= record.date <= today:
-                week_stats += record.amount
-        return week_stats
+                week_stats.append(record.amount)
+        return sum(week_stats)
 
     def get_today_balance(self):
         return self.limit - self.get_today_stats()
