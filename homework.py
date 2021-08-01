@@ -20,21 +20,15 @@ class Calculator:
         self.records.append(record)
 
     def get_today_stats(self):
-        today_stats = list()
         today = dt.date.today()
-        for record in self.records:
-            if record.date == today:
-                today_stats.append(record.amount)
-        return sum(today_stats)
+        return sum(record.amount for record in self.records
+                   if record.date == today)
 
     def get_week_stats(self):
-        week_stats = list()
         today = dt.date.today()
         day_week_ago = today - dt.timedelta(weeks=1)
-        for record in self.records:
-            if day_week_ago <= record.date <= today:
-                week_stats.append(record.amount)
-        return sum(week_stats)
+        return sum(record.amount for record in self.records
+                   if day_week_ago <= record.date <= today)
 
     def get_today_balance(self):
         return self.limit - self.get_today_stats()
@@ -47,6 +41,8 @@ class CashCalculator(Calculator):
 
     def get_today_cash_remained(self, currency):
         balance = self.get_today_balance()
+        if balance == 0:
+            return 'Денег нет, держись'
         currencies = {
             'rub': ('руб', CashCalculator.RUB_RATE),
             'usd': ('USD', CashCalculator.USD_RATE),
@@ -56,8 +52,6 @@ class CashCalculator(Calculator):
         balance = round(balance / rate, 2)
         if balance > 0:
             return f'На сегодня осталось {balance} {name}'
-        elif balance == 0:
-            return 'Денег нет, держись'
         else:
             return f'Денег нет, держись: твой долг - {abs(balance)} {name}'
 
